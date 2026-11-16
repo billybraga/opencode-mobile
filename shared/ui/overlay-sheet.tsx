@@ -18,7 +18,7 @@ import { getLanguageDirection } from '@/shared/i18n/languages';
 import { usePalette } from '@/shared/ui/theme/use-palette';
 import { useSwipeDismiss } from '@/shared/ui/use-swipe-dismiss';
 
-export function OverlaySheet({ visible, title, onClose, children, headerAction, testID, fitContent = false, scrollable = true, compact = false, blockUpdates = true, dismissible = true, dismissKeyboard = true }: {
+export function OverlaySheet({ visible, title, onClose, children, headerAction, testID, fitContent = false, scrollable = true, compact = false, fullHeight = false, blockUpdates = true, dismissible = true, dismissKeyboard = true }: {
   visible: boolean;
   title: string;
   onClose: () => void;
@@ -28,6 +28,7 @@ export function OverlaySheet({ visible, title, onClose, children, headerAction, 
   fitContent?: boolean;
   scrollable?: boolean;
   compact?: boolean;
+  fullHeight?: boolean;
   blockUpdates?: boolean;
   dismissible?: boolean;
   dismissKeyboard?: boolean;
@@ -55,7 +56,7 @@ export function OverlaySheet({ visible, title, onClose, children, headerAction, 
   }
 
   const content = (
-      <KeyboardAvoidingView behavior="padding" className={cn(stylesClasses.overlay)} style={[{ direction, paddingTop: compact ? Math.max(64 + insets.top, height * 0.45) : 64 + insets.top }]} testID={testID}>
+      <KeyboardAvoidingView behavior="padding" className={cn(stylesClasses.overlay)} style={[{ direction, paddingTop: compact && !fullHeight ? Math.max(64 + insets.top, height * 0.45) : 64 + insets.top }]} testID={testID}>
         {dismissible ? <Pressable accessibilityLabel={t('common:actions.closeWithName', { title })} onPress={onClose} style={StyleSheet.absoluteFill}>
           <Animated.View style={[styles.backdrop, { backgroundColor: palette.backdrop }, backdropStyle]} />
         </Pressable> : null}

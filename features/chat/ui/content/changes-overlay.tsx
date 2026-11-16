@@ -80,6 +80,7 @@ export function ChangesOverlay({
   const selectedTurn = diffTurns.find((turn) => turn.id === selectedDiffMessageId);
   const selectedTurnLabel = selectedTurn ? t('chat:diff.turnNumber', { number: selectedTurn.number }) : t('chat:diff.latestTurn');
   const showDiffDetails = isTurnScope && currentDiffs.length === 0;
+const expandedDiffActive = currentDiffs.some((diff) => expandedDiffId === `diff:${currentDiffScope}:${diff.file}`);
   const changedFiles = useMemo(
     () => [...new Set(diffDetails.flatMap((detail) => detail.body.split('\n').filter(Boolean)))],
     [diffDetails],
@@ -100,13 +101,15 @@ export function ChangesOverlay({
         title={t('chat:diff.filesChangedSimple', { files: diffCount, count: diffCount })}
         onClose={onCloseChanges}
         compact
+        fullHeight={expandedDiffActive}
         scrollable={false}
         headerAction={<Button accessibilityLabel={`${t('chat:diff.changeSourceLabel', { source: scopeLabel })}. ${scopeTitle}${isTurnScope ? ` · ${selectedTurnLabel}` : ''}`} onPress={() => setDiffSourcesVisible(true)} variant="ghost" size="icon"><Icon name={"dots-vertical"} size={24} color={palette.text} /></Button>}>
         <ScrollView
           className={cn(stylesClasses.scroll, "bg-background")}
           contentContainerStyle={styles.changesList}
           keyboardDismissMode="on-drag"
-          keyboardShouldPersistTaps="handled">
+          keyboardShouldPersistTaps="handled"
+          scrollsChildToFocus={false}>
           {connection.status === 'error' ? (
             <View className={cn(stylesClasses.changesNotice)}>
               <Text className={cn("text-foreground")} variant="title">{t('chat:content.connectionIssue')}</Text>
