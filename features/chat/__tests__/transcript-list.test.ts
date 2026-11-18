@@ -168,6 +168,32 @@ describe('transcript empty state', () => {
     expect(scrollToEnd).toHaveBeenCalled();
   });
 
+  it('re-asserts the tail when the transcript viewport shrinks for the keyboard', async () => {
+    const { list, root, flushFrames } = await mountTranscriptList({ hasMessages: true, transcriptRows: [{ key: 'a' }] });
+    const scrollToEnd = vi.fn();
+    list.props.ref.current = { scrollToEnd };
+    root.props.onLayout({ nativeEvent: { layout: { height: 600 } } });
+    flushFrames();
+    scrollToEnd.mockClear();
+
+    root.props.onLayout({ nativeEvent: { layout: { height: 320 } } });
+    flushFrames();
+    expect(scrollToEnd).toHaveBeenCalled();
+  });
+
+  it('keeps the reading position when the viewport shrinks after scrolling away', async () => {
+    const { list, root, flushFrames } = await mountTranscriptList({ hasMessages: true, transcriptRows: [{ key: 'a' }] });
+    const scrollToEnd = vi.fn();
+    list.props.ref.current = { scrollToEnd };
+    flushFrames();
+    scrollToEnd.mockClear();
+
+    list.props.onScroll({ nativeEvent: { contentOffset: { y: 0 }, contentSize: { height: 1200 }, layoutMeasurement: { height: 600 } } });
+    root.props.onLayout({ nativeEvent: { layout: { height: 320 } } });
+    flushFrames();
+    expect(scrollToEnd).not.toHaveBeenCalled();
+  });
+
   it('does not reserve a running-status footer', async () => {
     const { list } = await mountTranscriptList();
     expect(list.props.ListFooterComponent).toBeUndefined();

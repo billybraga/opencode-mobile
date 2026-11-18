@@ -188,6 +188,12 @@ export function TranscriptList({
     if (settleFrameRef.current !== undefined) cancelAnimationFrame(settleFrameRef.current);
   }, []);
 
+  // Keyboard, composer and rotation changes resize the viewport without
+  // changing the rows; keep the tail anchored when the reader follows it.
+  const handleTranscriptLayout = useCallback(() => {
+    if (followTailRef.current) settleToTail();
+  }, [settleToTail]);
+
   const setActivityExpanded = useCallback((key: string, expanded: boolean) => {
     setExpandedActivityKeys((current) => {
       if (current.has(key) === expanded) return current;
@@ -329,7 +335,7 @@ export function TranscriptList({
     : undefined;
 
   return (
-    <View className={cn(stylesClasses.transcriptContainer)}>
+    <View className={cn(stylesClasses.transcriptContainer)} onLayout={handleTranscriptLayout}>
       <FlashList
       key={identity}
       ref={transcriptRef}
